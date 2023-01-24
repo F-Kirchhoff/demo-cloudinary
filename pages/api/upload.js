@@ -16,29 +16,36 @@ cloudinary.config({
 export default async function handler(req, res) {
   switch (req.method) {
     case "POST":
-      await new Promise((reject, resolve) => {
-        const form = formidable({});
-        form.parse(req, async (error, fields, files) => {
-          if (error) {
-            console.log(error);
-            res.status(500).json({
-              message: error,
-            });
-            reject();
-            return;
-          }
-          const { file } = files;
+      const files = await parseAsync(req);
+      const { imageFile } = files;
 
-          const result = await cloudinary.v2.uploader.upload(file.filepath, {
-            public_id: file.newFilename,
-          });
-
-          res.status(201).json(result);
-          resolve();
-        });
+      const result = await cloudinary.v2.uploader.upload(imageFile.filepath, {
+        public_id: imageFile.newFilename,
       });
+
+      res.status(201).json(result);
       break;
     default:
       res.status(400).json({ message: "Method not supported." });
   }
+}
+
+function parseAsync(request) {
+  // create a Promise which resolves with the parsed files
+  return new Promise((resolve, reject) => {
+    // instantiate formidable
+    const form = formidable({});
+
+    // parse form request with callback
+    form.parse(request, (error, fields, files) => {
+      if (error) {
+        console.log(error);
+        // reject Promise if something went wrong
+        reject(error);
+        return;
+      }
+      // resolve Promise if files were parsed correctly
+      resolve(files);
+    });
+  });
 }
