@@ -45,7 +45,7 @@ export default function Home() {
   return (
     <AppContainer>
       <form action="" onSubmit={handleSubmit}>
-        <input type="file" name="file" required />
+        <input type="file" name="imageFile" required />
         <button type="submit">Upload</button>
       </form>
       <ImagesContainer>
