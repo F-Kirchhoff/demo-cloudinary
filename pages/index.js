@@ -40,6 +40,21 @@ export default function Home() {
   async function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
+    const response = await fetch("/api/upload", {
+      method: "post",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    const newImage = {
+      id: data.public_id,
+      url: data.secure_url,
+      width: data.width,
+      height: data.height,
+      alt: "",
+    };
+    setImages([...images, newImage]);
   }
 
   return (
